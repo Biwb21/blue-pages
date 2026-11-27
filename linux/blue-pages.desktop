@@ -8,4 +8,4 @@ Icon=blue-pages
 Terminal=false
 Categories=Office;Viewer;Literature;
 MimeType=application/pdf;application/epub+zip;
-StartupWMClass=Blue Pages
+StartupWMClass=blue-pages

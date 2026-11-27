@@ -253,6 +253,7 @@ impl eframe::App for BluePagesApp {
 
 fn main() -> eframe::Result {
     let mut viewport = egui::ViewportBuilder::default()
+        .with_app_id("blue-pages")
         .with_title("Blue Pages — Leitor de EPUB e PDF")
         .with_inner_size([1280.0, 800.0])
         .with_min_inner_size([860.0, 600.0]);

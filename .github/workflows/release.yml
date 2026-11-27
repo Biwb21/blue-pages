@@ -56,9 +56,13 @@ jobs:
           cp "$DIR/libpdfium.so" "$HOME/.local/bin/libpdfium.so"
           chmod +x "$HOME/.local/bin/blue-pages"
           cp "$DIR/blue_pages_icon.png" "$HOME/.local/share/icons/hicolor/256x256/apps/blue-pages.png"
-          sed "s|^Exec=.*|Exec=$HOME/.local/bin/blue-pages %f|" "$DIR/blue-pages.desktop" > "$HOME/.local/share/applications/blue-pages.desktop"
+          ICON_PATH="$HOME/.local/share/icons/hicolor/256x256/apps/blue-pages.png"
+          sed -e "s|^Exec=.*|Exec=$HOME/.local/bin/blue-pages %f|" -e "s|^Icon=.*|Icon=$ICON_PATH|" "$DIR/blue-pages.desktop" > "$HOME/.local/share/applications/blue-pages.desktop"
           if command -v update-desktop-database >/dev/null 2>&1; then
             update-desktop-database "$HOME/.local/share/applications" || true
+          fi
+          if command -v kbuildsycoca6 >/dev/null 2>&1; then
+            kbuildsycoca6 --noincremental >/dev/null 2>&1 || true
           fi
           echo "Blue Pages instalado! Procure por 'Blue Pages' no menu de aplicativos."
           EOF
