@@ -1,0 +1,149 @@
+name: Build & Publish Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    name: Build Linux (x86_64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar dependências de sistema (egui / rfd)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgtk-3-dev \
+            libxcb-render0-dev \
+            libxcb-shape0-dev \
+            libxcb-xfixes0-dev \
+            libxkbcommon-dev \
+            libssl-dev \
+            pkg-config
+
+      - name: Instalar Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Compilar Blue Pages (--release)
+        run: cargo build --release
+
+      - name: Baixar Pdfium pré-compilado (Linux x64)
+        run: |
+          curl -fSL https://github.com/bblanchon/pdfium-binaries/releases/latest/download/pdfium-linux-x64.tgz -o pdfium.tgz
+          mkdir -p pdfium_tmp
+          tar -xzf pdfium.tgz -C pdfium_tmp
+
+      - name: Empacotar blue-pages-linux-x86_64.tar.gz
+        run: |
+          mkdir -p dist/blue-pages
+          cp target/release/blue-pages dist/blue-pages/
+          cp pdfium_tmp/lib/libpdfium.so dist/blue-pages/
+          cp assets/blue_pages_icon.png dist/blue-pages/
+          cp linux/blue-pages.desktop dist/blue-pages/
+          cat << 'EOF' > dist/blue-pages/install.sh
+          #!/usr/bin/env bash
+          set -euo pipefail
+          DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+          mkdir -p "$HOME/.local/bin" "$HOME/.local/share/icons/hicolor/256x256/apps" "$HOME/.local/share/applications"
+          cp "$DIR/blue-pages" "$HOME/.local/bin/blue-pages"
+          cp "$DIR/libpdfium.so" "$HOME/.local/bin/libpdfium.so"
+          chmod +x "$HOME/.local/bin/blue-pages"
+          cp "$DIR/blue_pages_icon.png" "$HOME/.local/share/icons/hicolor/256x256/apps/blue-pages.png"
+          sed "s|^Exec=.*|Exec=$HOME/.local/bin/blue-pages %f|" "$DIR/blue-pages.desktop" > "$HOME/.local/share/applications/blue-pages.desktop"
+          if command -v update-desktop-database >/dev/null 2>&1; then
+            update-desktop-database "$HOME/.local/share/applications" || true
+          fi
+          echo "Blue Pages instalado! Procure por 'Blue Pages' no menu de aplicativos."
+          EOF
+          chmod +x dist/blue-pages/install.sh
+          tar -czf blue-pages-linux-x86_64.tar.gz -C dist blue-pages
+
+      - name: Enviar artefato Linux
+        uses: actions/upload-artifact@v4
+        with:
+          name: blue-pages-linux-x86_64
+          path: blue-pages-linux-x86_64.tar.gz
+
+  build-windows:
+    name: Build Windows (x86_64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Compilar Blue Pages (--release)
+        run: cargo build --release
+
+      - name: Baixar Pdfium pré-compilado (Windows x64) e empacotar ZIP
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/bblanchon/pdfium-binaries/releases/latest/download/pdfium-win-x64.tgz" -OutFile "pdfium.tgz"
+          New-Item -ItemType Directory -Force -Path "pdfium_tmp" | Out-Null
+          tar -xzf pdfium.tgz -C pdfium_tmp
+          New-Item -ItemType Directory -Force -Path "dist\blue-pages" | Out-Null
+          Copy-Item "target\release\blue-pages.exe" "dist\blue-pages\"
+          Copy-Item "pdfium_tmp\bin\pdfium.dll" "dist\blue-pages\"
+          Compress-Archive -Path "dist\blue-pages\*" -DestinationPath "blue-pages-windows-x86_64.zip" -Force
+
+      - name: Enviar artefato Windows
+        uses: actions/upload-artifact@v4
+        with:
+          name: blue-pages-windows-x86_64
+          path: blue-pages-windows-x86_64.zip
+
+  build-macos:
+    name: Build macOS (Apple Silicon)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Compilar Blue Pages (--release)
+        run: cargo build --release
+
+      - name: Baixar Pdfium pré-compilado (macOS ARM64) e empacotar
+        run: |
+          curl -fSL https://github.com/bblanchon/pdfium-binaries/releases/latest/download/pdfium-mac-arm64.tgz -o pdfium.tgz
+          mkdir -p pdfium_tmp dist/blue-pages
+          tar -xzf pdfium.tgz -C pdfium_tmp
+          cp target/release/blue-pages dist/blue-pages/
+          cp pdfium_tmp/lib/libpdfium.dylib dist/blue-pages/
+          tar -czf blue-pages-macos-arm64.tar.gz -C dist blue-pages
+
+      - name: Enviar artefato macOS
+        uses: actions/upload-artifact@v4
+        with:
+          name: blue-pages-macos-arm64
+          path: blue-pages-macos-arm64.tar.gz
+
+  publish-release:
+    name: Publicar GitHub Release
+    needs: [build-linux, build-windows, build-macos]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar todos os artefatos compilados
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Criar Release no GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            release-assets/blue-pages-linux-x86_64.tar.gz
+            release-assets/blue-pages-windows-x86_64.zip
+            release-assets/blue-pages-macos-arm64.tar.gz
