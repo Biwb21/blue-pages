@@ -1,0 +1,9 @@
+/target
+**/*.rs.bk
+*.pdb
+*.log
+libpdfium.so
+pdfium.dll
+libpdfium.dylib
+.DS_Store
+Thumbs.db

@@ -1,0 +1,18 @@
+[package]
+name = "blue-pages"
+version = "0.2.0"
+edition = "2021"
+description = "Blue Pages — Leitor desktop de EPUB e PDF em Rust"
+
+[dependencies]
+eframe = "0.29"
+egui = "0.29"
+epub = "2.1"
+pdfium-render = "0.8"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp", "gif"] }
+rfd = "0.15"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+directories = "5.0"
+chrono = { version = "0.4", features = ["serde"] }
+regex = "1.11"

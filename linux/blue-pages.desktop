@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Blue Pages
+GenericName=Leitor de EPUB e PDF
+Comment=Leitor desktop nativo de EPUB e PDF em Rust
+Exec=blue-pages %f
+Icon=blue-pages
+Terminal=false
+Categories=Office;Viewer;Literature;
+MimeType=application/pdf;application/epub+zip;
+StartupWMClass=Blue Pages
