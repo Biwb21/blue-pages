@@ -10,6 +10,7 @@ cargo build --release
 
 echo "==> Instalando binário em ~/.local/bin/blue-pages..."
 mkdir -p "$HOME/.local/bin"
+rm -f "$HOME/.local/bin/blue-pages"
 cp "$PROJECT_DIR/target/release/blue-pages" "$HOME/.local/bin/blue-pages"
 chmod +x "$HOME/.local/bin/blue-pages"
 

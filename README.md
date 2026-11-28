@@ -106,7 +106,8 @@ chmod +x linux/install-linux.sh
 | `←` / `→` | Página ou capítulo anterior / próximo |
 | `F` | Alternar tela cheia |
 | `Esc` | Sair da tela cheia ou fechar ajustes |
-| `+` / `-` | Aumentar / diminuir zoom |
+| `+` / `-` ou `Ctrl + Scroll` | Aumentar / diminuir zoom (mouse ou touchpad) |
+| `Ctrl + 0` | Resetar zoom para 100% |
 
 ---
 

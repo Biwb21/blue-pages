@@ -52,6 +52,7 @@ jobs:
           set -euo pipefail
           DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
           mkdir -p "$HOME/.local/bin" "$HOME/.local/share/icons/hicolor/256x256/apps" "$HOME/.local/share/applications"
+          rm -f "$HOME/.local/bin/blue-pages"
           cp "$DIR/blue-pages" "$HOME/.local/bin/blue-pages"
           cp "$DIR/libpdfium.so" "$HOME/.local/bin/libpdfium.so"
           chmod +x "$HOME/.local/bin/blue-pages"

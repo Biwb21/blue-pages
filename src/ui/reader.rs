@@ -142,6 +142,15 @@ impl ReaderView {
                 if i.key_pressed(Key::Minus) {
                     settings.zoom = (settings.zoom - 0.1).max(0.5);
                 }
+                if i.modifiers.ctrl && i.key_pressed(Key::Num0) {
+                    settings.zoom = 1.0;
+                }
+
+                // Zoom in/out via Ctrl + Scroll (mouse ou touchpad) e gesto de pinça no touchpad
+                let zoom_delta = i.zoom_delta();
+                if (zoom_delta - 1.0).abs() > 0.001 {
+                    settings.zoom = (settings.zoom * zoom_delta).clamp(0.5, 2.2);
+                }
             });
         }
         if let Some(fs) = toggle_fullscreen {
