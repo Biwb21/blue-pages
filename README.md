@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/Rust-2021-000000?logo=rust&logoColor=white" alt="Rust 2021" />
   <img src="https://img.shields.io/badge/GUI-egui%20%2F%20eframe-38BDF8" alt="egui / eframe" />
   <img src="https://img.shields.io/badge/Formatos-EPUB%20%7C%20PDF-0284C7" alt="EPUB e PDF" />
-  <img src="https://img.shields.io/badge/Licen%C3%A7a-MIT-22C55E" alt="Licença MIT" />
+  <img src="https://img.shields.io/badge/Licen%C3%A7a-GPLv3-38BDF8" alt="Licença GPLv3" />
 </p>
 
 ---
@@ -86,7 +86,7 @@ Instale o Rust em [rustup.rs](https://rustup.rs/) e as bibliotecas gráficas da 
 
 ### 2. Clone e execute
 ```bash
-git clone https://github.com/SEU_USUARIO/blue-pages.git
+git clone https://github.com/Biwb21/blue-pages.git
 cd blue-pages
 cargo run --release
 ```
@@ -125,4 +125,4 @@ Em alguns minutos o GitHub compila os três sistemas, inclui o `Pdfium` em cada 
 
 ## Licença
 
-Distribuído sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Distribuído sob a licença **GNU General Public License v3.0 (GPL-3.0-or-later)**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
